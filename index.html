@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Diario</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Diario">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#E9EDF1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F151C" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+/* Una colonna stretta come un quaderno tascabile: data in testa, composizione, voci del giorno, archivio. */
+:root{
+  --bg:#E9EDF1; --paper:#F8FAFB; --ink:#1B2836; --muted:#5D6B79; --line:#D3DAE1;
+  --think:#3047C9; --think-soft:#E3E7FB; --act:#1D7A5C; --act-soft:#DDF1EA; --danger:#B3261E; --warn:#8A5A00;
+  --display:ui-serif,"New York",Georgia,serif;
+  --body:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0F151C; --paper:#17202A; --ink:#E4EAF0; --muted:#94A2B0; --line:#2A3542;
+  --think:#8C9DFF; --think-soft:#212A52; --act:#5CCBA3; --act-soft:#163A2F; --danger:#FF8A80; --warn:#F2B84B; color-scheme:dark}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;
+  padding-top:max(16px,env(safe-area-inset-top,0px));padding-bottom:max(32px,env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+[hidden]{display:none!important}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1,h2{font-family:var(--display);font-weight:600;margin:0;text-wrap:balance}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--think);outline-offset:2px}
+
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.brand{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.link{border:0;background:none;color:var(--think);font-weight:600;padding:4px 0;font-size:15px}
+.daynav{display:flex;align-items:center;gap:8px}
+.daynav h1{font-size:clamp(26px,7.5vw,36px);line-height:1.1;flex:1;min-width:0}
+.daynav h1 em{font-style:italic;font-weight:400;color:var(--muted)}
+.iconbtn{flex:none;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--paper);font-size:22px;line-height:1;display:grid;place-items:center}
+.subrow{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.dateinput{border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:4px 8px;font-size:15px}
+.sync{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--act)}
+.sync.wait .dot{background:var(--warn)} .sync.err .dot{background:var(--danger)}
+
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--bg);border-radius:10px;padding:4px}
+.seg button{border:0;background:transparent;border-radius:7px;padding:9px;font-weight:700;color:var(--muted)}
+.seg button[aria-pressed="true"][data-k="pensiero"]{background:var(--think-soft);color:var(--think)}
+.seg button[aria-pressed="true"][data-k="azione"]{background:var(--act-soft);color:var(--act)}
+textarea,.field{width:100%;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:12px;font-size:17px;line-height:1.5}
+textarea{min-height:120px;resize:vertical}
+.hint{font-size:14px;color:var(--muted);margin:0}
+.primary{border:0;border-radius:10px;padding:13px;font-weight:700;background:var(--ink);color:var(--paper);font-size:17px}
+.primary:disabled{opacity:.45}
+.status{font-size:14px;color:var(--muted);min-height:1.4em;margin:0}
+.status.err{color:var(--danger)}
+
+.section-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.section-h h2{font-size:24px}
+.count{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.entries,.days{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.entry{display:grid;grid-template-columns:50px 1fr auto;gap:10px;padding:12px 0;border-top:1px solid var(--line)}
+.entry:first-child{border-top:0}
+.time{font-variant-numeric:tabular-nums;color:var(--muted);font-size:15px;padding-top:2px}
+.etext{min-width:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:1px 8px;margin-bottom:4px}
+.tag.pensiero{background:var(--think-soft);color:var(--think)}
+.tag.azione{background:var(--act-soft);color:var(--act)}
+.pend{font-size:12px;color:var(--warn);margin-left:6px}
+.del{border:0;background:none;color:var(--muted);font-size:14px;padding:2px 4px;align-self:start}
+.confirm{grid-column:2/4;display:flex;gap:10px;align-items:center;font-size:14px;flex-wrap:wrap}
+.confirm button{border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:5px 10px;font-size:14px}
+.confirm .yes{border-color:var(--danger);color:var(--danger);font-weight:700}
+.empty{color:var(--muted);font-size:15px;margin:0;padding:8px 0}
+.days button{width:100%;text-align:left;border:0;background:none;padding:10px 0;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:4px 10px}
+.days li:first-child button{border-top:0}
+.dname{font-weight:700}
+.dcount{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.dprev{grid-column:1/3;font-size:14px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+mark{background:var(--think-soft);color:inherit;border-radius:3px}
+label.lbl{font-size:14px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Configurazione (primo avvio) -->
+  <section id="setup" class="card" hidden>
+    <h1 style="font-size:30px">Collega il diario</h1>
+    <p class="hint">Serve una sola volta. I dati restano su questo iPhone e non finiscono nel codice dell'app.</p>
+    <label class="lbl" for="cfgUrl">Indirizzo dello script Google (finisce con /exec)</label>
+    <input id="cfgUrl" class="field" type="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec">
+    <label class="lbl" for="cfgToken">Frase segreta</label>
+    <input id="cfgToken" class="field" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="La frase che hai scritto nello script">
+    <button class="primary" id="cfgSave">Collega e prova</button>
+    <p class="status" id="cfgStatus" role="status"></p>
+    <button class="link" id="cfgCancel" hidden>Annulla</button>
+  </section>
+
+  <!-- Diario -->
+  <div id="main" class="wrap" style="gap:22px" hidden>
+    <header style="display:flex;flex-direction:column;gap:6px">
+      <div class="top">
+        <span class="brand">Diario</span>
+        <span class="sync" id="sync"><span class="dot"></span><span id="syncText">—</span></span>
+      </div>
+      <div class="daynav">
+        <button class="iconbtn" id="prev" aria-label="Giorno precedente">‹</button>
+        <h1 id="dayTitle">Oggi</h1>
+        <button class="iconbtn" id="next" aria-label="Giorno successivo">›</button>
+      </div>
+      <div class="subrow">
+        <button class="link" id="goToday">Torna a oggi</button>
+        <label class="count" for="pick">Vai al</label>
+        <input type="date" id="pick" class="dateinput">
+      </div>
+    </header>
+
+    <form class="card" id="composer">
+      <div class="seg" role="group" aria-label="Tipo di voce">
+        <button type="button" data-k="pensiero" aria-pressed="true" id="kPensiero">Pensiero</button>
+        <button type="button" data-k="azione" aria-pressed="false" id="kAzione">Azione</button>
+      </div>
+      <label for="text" class="hint" id="prompt">Cosa ti passa per la testa?</label>
+      <textarea id="text" placeholder="Scrivi, oppure tocca il microfono della tastiera per dettare."></textarea>
+      <button class="primary" id="save" type="submit" disabled>Salva nel diario</button>
+      <p class="status" id="status" role="status"></p>
+    </form>
+
+    <section>
+      <div class="section-h"><h2>Le voci del giorno</h2><span class="count" id="dayCount"></span></div>
+      <ul class="entries" id="entries"></ul>
+      <p class="empty" id="dayEmpty"></p>
+    </section>
+
+    <section style="display:flex;flex-direction:column;gap:10px">
+      <div class="section-h"><h2>Archivio</h2><span class="count" id="totCount"></span></div>
+      <label for="q" class="hint">Cerca tra tutte le voci</label>
+      <input id="q" class="field" type="search" placeholder="Una parola, un nome, un luogo…">
+      <ul class="days" id="days"></ul>
+      <p class="empty" id="daysEmpty" hidden></p>
+    </section>
+
+    <button class="link" id="openSettings" style="align-self:flex-start">Impostazioni di collegamento</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const pad=n=>String(n).padStart(2,"0");
+  const keyOf=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+  const dateOf=k=>{const [y,m,d]=k.split("-").map(Number);return new Date(y,m-1,d)};
+  const todayKey=()=>keyOf(new Date());
+  const fmtLong=k=>dateOf(k).toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"});
+  const fmtFull=k=>dateOf(k).toLocaleDateString("it-IT",{weekday:"short",day:"numeric",month:"long",year:"numeric"});
+  const uid=()=>(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2));
+  const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const load=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
+  const store=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+
+  let cfg=load("diario-cfg",null);
+  let voci=load("diario-voci",[]);      // copia locale di tutte le voci
+  let coda=load("diario-coda",[]);      // operazioni non ancora inviate al foglio
+  let current=todayKey(), kind=load("diario-tipo","pensiero"), pendingDel=null, syncing=false, lastErr="";
+
+  /* ---------- collegamento al foglio Google ---------- */
+  function normUrl(s){s=s.trim(); if(/^[\w-]{30,}$/.test(s)) return "https://script.google.com/macros/s/"+s+"/exec"; return s}
+  async function api(body,c){
+    c=c||cfg;
+    const r=await fetch(c.url,{method:"POST",body:JSON.stringify(Object.assign({token:c.token},body))});
+    if(!r.ok) throw new Error("Il foglio ha risposto con un errore ("+r.status+").");
+    let j; try{j=await r.json()}catch(e){throw new Error("Risposta non valida: controlla l'indirizzo dello script.")}
+    if(!j.ok) throw new Error(j.errore==="codice segreto non valido"?"La frase segreta non corrisponde a quella dello script.":(j.errore||"Errore sconosciuto."));
+    return j;
+  }
+
+  async function sync(){
+    if(syncing||!cfg) return; syncing=true; setSync();
+    try{
+      while(coda.length){ await api(coda[0]); coda.shift(); store("diario-coda",coda); }
+      const j=await api({action:"list"});
+      const inAttesa=coda.filter(o=>o.action==="add").map(o=>o.voce);
+      voci=j.voci.concat(inAttesa); store("diario-voci",voci); lastErr="";
+    }catch(e){ lastErr=navigator.onLine?e.message:"offline"; }
+    syncing=false; render();
+  }
+  function setSync(){
+    const el=$("sync"), t=$("syncText"); el.className="sync";
+    if(syncing){t.textContent="Sincronizzo…";el.classList.add("wait");return}
+    if(lastErr==="offline"){t.textContent=coda.length?"Offline · "+coda.length+" da inviare":"Offline";el.classList.add("wait");return}
+    if(lastErr){t.textContent="Errore di invio";el.classList.add("err");el.title=lastErr;return}
+    if(coda.length){t.textContent=coda.length+" da inviare";el.classList.add("wait");return}
+    t.textContent="Salvato su Google";
+  }
+
+  /* ---------- configurazione ---------- */
+  function showSetup(){ $("setup").hidden=false; $("main").hidden=true;
+    $("cfgUrl").value=cfg?cfg.url:""; $("cfgToken").value=cfg?cfg.token:""; $("cfgCancel").hidden=!cfg; $("cfgStatus").textContent=""; }
+  function showMain(){ $("setup").hidden=true; $("main").hidden=false; render(); }
+  $("cfgSave").onclick=async()=>{
+    const c={url:normUrl($("cfgUrl").value),token:$("cfgToken").value.trim()};
+    const st=$("cfgStatus"); st.classList.remove("err");
+    if(!/^https:\/\//.test(c.url)||!c.token){st.textContent="Inserisci sia l'indirizzo sia la frase segreta.";st.classList.add("err");return}
+    st.textContent="Provo il collegamento…"; $("cfgSave").disabled=true;
+    try{ const j=await api({action:"list"},c); cfg=c; store("diario-cfg",cfg);
+      voci=j.voci.concat(coda.filter(o=>o.action==="add").map(o=>o.voce)); store("diario-voci",voci);
+      st.textContent="Collegato."; showMain(); sync();
+    }catch(e){ st.textContent=navigator.onLine?e.message:"Sei offline: riprova quando hai connessione."; st.classList.add("err"); }
+    $("cfgSave").disabled=false;
+  };
+  $("cfgCancel").onclick=showMain;
+  $("openSettings").onclick=showSetup;
+
+  /* ---------- composizione ---------- */
+  try{const d=localStorage.getItem("diario-bozza"); if(d) $("text").value=d}catch(e){}
+  function setKind(k){kind=k; store("diario-tipo",k);
+    $("kPensiero").setAttribute("aria-pressed",k==="pensiero");
+    $("kAzione").setAttribute("aria-pressed",k==="azione");
+    $("prompt").textContent=k==="pensiero"?"Cosa ti passa per la testa?":"Cosa hai fatto, o cosa farai?";}
+  $("kPensiero").onclick=()=>setKind("pensiero");
+  $("kAzione").onclick=()=>setKind("azione");
+  setKind(kind==="azione"?"azione":"pensiero");
+  function updateSave(){$("save").disabled=!$("text").value.trim()}
+  $("text").addEventListener("input",()=>{try{localStorage.setItem("diario-bozza",$("text").value)}catch(e){} updateSave()});
+  function status(m,err){const s=$("status");s.textContent=m||"";s.classList.toggle("err",!!err)}
+
+  $("composer").addEventListener("submit",e=>{
+    e.preventDefault();
+    const testo=$("text").value.trim(); if(!testo) return;
+    const now=new Date(); let ts=now.getTime();
+    if(current!==todayKey()){const d=dateOf(current);d.setHours(now.getHours(),now.getMinutes());ts=d.getTime()}
+    const voce={id:uid(),tipo:kind,testo,ts};
+    voci.push(voce); coda.push({action:"add",voce}); store("diario-voci",voci); store("diario-coda",coda);
+    $("text").value=""; try{localStorage.removeItem("diario-bozza")}catch(e){}
+    status(kind==="azione"?"Azione salvata.":"Pensiero salvato."); setTimeout(()=>status(""),2500);
+    render(); sync();
+  });
+
+  function removeVoce(id){
+    voci=voci.filter(v=>v.id!==id);
+    const i=coda.findIndex(o=>o.action==="add"&&o.voce.id===id);
+    if(i>=0) coda.splice(i,1); else coda.push({action:"delete",id});
+    store("diario-voci",voci); store("diario-coda",coda);
+    render(); sync();
+  }
+
+  /* ---------- navigazione ---------- */
+  function go(k){current=k;pendingDel=null;render();window.scrollTo({top:0})}
+  $("prev").onclick=()=>{const d=dateOf(current);d.setDate(d.getDate()-1);go(keyOf(d))};
+  $("next").onclick=()=>{const d=dateOf(current);d.setDate(d.getDate()+1);go(keyOf(d))};
+  $("goToday").onclick=()=>go(todayKey());
+  $("pick").addEventListener("change",e=>{if(e.target.value) go(e.target.value)});
+  $("q").addEventListener("input",renderDays);
+
+  /* ---------- disegno ---------- */
+  function byDay(){const m={}; voci.forEach(v=>{const k=keyOf(new Date(v.ts));(m[k]=m[k]||[]).push(v)});
+    Object.values(m).forEach(a=>a.sort((x,y)=>x.ts-y.ts)); return m}
+  const pendingIds=()=>new Set(coda.filter(o=>o.action==="add").map(o=>o.voce.id));
+
+  function render(){
+    if($("main").hidden) return;
+    const t=todayKey(), days=byDay(), pend=pendingIds();
+    $("dayTitle").innerHTML=current===t?"Oggi, <em>"+esc(fmtLong(current))+"</em>":esc(fmtLong(current));
+    $("goToday").hidden=current===t; $("pick").value=current;
+    const items=days[current]||[], ul=$("entries"); ul.innerHTML="";
+    items.forEach(it=>{
+      const li=document.createElement("li"); li.className="entry"; const tm=new Date(it.ts);
+      li.innerHTML='<span class="time">'+pad(tm.getHours())+":"+pad(tm.getMinutes())+'</span>'+
+        '<div class="etext"><span class="tag '+(it.tipo==="azione"?"azione":"pensiero")+'">'+(it.tipo==="azione"?"Azione":"Pensiero")+'</span>'+
+        (pend.has(it.id)?'<span class="pend">da inviare</span>':'')+'<br>'+esc(it.testo)+'</div>'+
+        '<button class="del" aria-label="Elimina voce">Elimina</button>';
+      li.querySelector(".del").onclick=()=>{pendingDel=it.id;render()};
+      if(pendingDel===it.id){
+        const c=document.createElement("div");c.className="confirm";
+        c.innerHTML='<span>Eliminare questa voce anche dal foglio?</span><button class="yes">Sì, elimina</button><button class="no">Annulla</button>';
+        c.querySelector(".no").onclick=()=>{pendingDel=null;render()};
+        c.querySelector(".yes").onclick=()=>{pendingDel=null;removeVoce(it.id)};
+        li.appendChild(c);
+      }
+      ul.appendChild(li);
+    });
+    $("dayEmpty").hidden=items.length>0;
+    $("dayEmpty").textContent=current===t?"Nessuna voce oggi. Scrivi o detta il primo pensiero qui sopra.":"Nessuna voce per questo giorno. Puoi aggiungerne una anche adesso.";
+    const np=items.filter(i=>i.tipo!=="azione").length;
+    $("dayCount").textContent=items.length?np+" pensieri · "+(items.length-np)+" azioni":"";
+    renderDays(); setSync(); updateSave();
+  }
+
+  function renderDays(){
+    const q=$("q").value.trim().toLowerCase(), days=byDay();
+    const keys=Object.keys(days).sort().reverse();
+    $("totCount").textContent=voci.length?voci.length+" voci in "+keys.length+" giorni":"";
+    const ul=$("days"); ul.innerHTML=""; let shown=0;
+    keys.forEach(k=>{
+      const items=days[k]; let hits=items;
+      if(q){hits=items.filter(i=>i.testo.toLowerCase().includes(q)); if(!hits.length) return}
+      const first=hits[0].testo; let prev;
+      if(q){const i=first.toLowerCase().indexOf(q),s=Math.max(0,i-30);
+        prev=(s?"…":"")+esc(first.slice(s,i))+"<mark>"+esc(first.slice(i,i+q.length))+"</mark>"+esc(first.slice(i+q.length,i+q.length+80))}
+      else prev=esc(first.slice(0,110));
+      const li=document.createElement("li");
+      li.innerHTML='<button><span class="dname">'+esc(fmtFull(k))+'</span><span class="dcount">'+(q?hits.length+" trovate":items.length+" voci")+'</span><span class="dprev">'+prev+'</span></button>';
+      li.firstChild.onclick=()=>go(k); ul.appendChild(li); shown++;
+    });
+    $("daysEmpty").hidden=shown>0;
+    $("daysEmpty").textContent=q?"Nessuna voce contiene “"+$("q").value.trim()+"”.":"Nessun giorno ancora registrato. La prima voce che salvi comparirà qui.";
+  }
+
+  /* ---------- avvio ---------- */
+  if(cfg){showMain(); sync()} else showSetup();
+  window.addEventListener("online",sync);
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible") sync()});
+  setInterval(()=>{if(current!==todayKey()&&$("goToday").hidden) go(todayKey())},60000); // passa al nuovo giorno dopo mezzanotte
+  if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+})();
+</script>
+</body>
+</html>
