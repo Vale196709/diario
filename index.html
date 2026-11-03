@@ -155,6 +155,9 @@ mark{background:color-mix(in srgb,var(--think) 22%,transparent);color:inherit;bo
 .link{border:0;background:none;color:var(--think);font-weight:600;padding:6px 0;font-size:15px;align-self:flex-start}
 .status{font-size:14px;color:var(--muted);min-height:1.4em;margin:0}
 .status.err{color:var(--danger)}
+.ver{font-size:12px;color:var(--faint);text-align:center;margin:8px 0 0;font-variant-numeric:tabular-nums}
+.log{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted)}
+.log b{color:var(--ink)}
 
 /* barra schede */
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--bar);-webkit-backdrop-filter:saturate(1.6) blur(18px);backdrop-filter:saturate(1.6) blur(18px);
@@ -188,6 +191,15 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     <button class="primary" id="cfgSave">Collega e prova</button>
     <p class="status" id="cfgStatus" role="status"></p>
     <button class="link" id="cfgCancel" hidden>Annulla</button>
+  </div>
+  <div class="setup" id="about">
+    <div class="sec-h"><h2>Versione</h2><span class="n" id="ver2"></span></div>
+    <ul class="log">
+      <li><b>1.3</b> · 3 nov 2026 — Numero di versione e data visibili; elenco delle novità.</li>
+      <li><b>1.2</b> · 3 nov 2026 — Nuova interfaccia con le schede Scrivi, Leggi e Mese; contatori; tema scuro.</li>
+      <li><b>1.1</b> · 3 nov 2026 — Corretto l'invio del testo al foglio Google.</li>
+      <li><b>1.0</b> · 2 nov 2026 — Prima versione: pensieri e azioni salvati su Google Sheets.</li>
+    </ul>
   </div>
 </section>
 
@@ -229,6 +241,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     <ul class="tl" id="todayList"></ul>
     <p class="empty" id="todayEmpty">La pagina di oggi è ancora bianca.</p>
   </section>
+  <p class="ver" id="ver1"></p>
 </section>
 
 <!-- ============ LEGGI ============ -->
@@ -286,6 +299,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
 <script>
 (function(){
+  const VERSIONE_APP="1.3", DATA_APP="3 novembre 2026";
   const $=id=>document.getElementById(id);
   const pad=n=>String(n).padStart(2,"0");
   const keyOf=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
@@ -495,6 +509,9 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   }
 
   let tt; function toast(m){const el=$("toast");el.textContent=m;el.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("on"),1800)}
+
+  $("ver1").textContent="Diario "+VERSIONE_APP+" · "+DATA_APP;
+  $("ver2").textContent=VERSIONE_APP+" · "+DATA_APP;
 
   /* ---------- avvio ---------- */
   if(cfg){show(["scrivi","leggi","mese"].includes(view)?view:"scrivi"); sync()} else showSetup();
