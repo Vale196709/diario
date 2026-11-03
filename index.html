@@ -185,7 +185,7 @@ label.lbl{font-size:14px;font-weight:700}
   async function sync(){
     if(syncing||!cfg) return; syncing=true; setSync();
     try{
-      while(coda.length){ await api(coda[0]); coda.shift(); store("diario-coda",coda); }
+      while(coda.length){ const op=coda[0]; await api(op.action==="add"?Object.assign({action:"add"},op.voce):op); coda.shift(); store("diario-coda",coda); }
       const j=await api({action:"list"});
       const inAttesa=coda.filter(o=>o.action==="add").map(o=>o.voce);
       voci=j.voci.concat(inAttesa); store("diario-voci",voci); lastErr="";
