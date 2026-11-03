@@ -1,5 +1,5 @@
 // Tiene l'app disponibile anche senza rete. Cambia VERSIONE quando aggiorni i file.
-const VERSIONE = 'diario-1.3';
+const VERSIONE = 'diario-2.0';
 const FILE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

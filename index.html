@@ -159,6 +159,33 @@ mark{background:color-mix(in srgb,var(--think) 22%,transparent);color:inherit;bo
 .log{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted)}
 .log b{color:var(--ink)}
 
+/* allegati e luogo */
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.tool{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:transparent;border-radius:999px;padding:7px 12px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer}
+.tool svg{width:17px;height:17px}
+.tool[aria-pressed="true"]{background:var(--think-soft);border-color:transparent;color:var(--think)}
+.tool input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.pv{display:flex;gap:8px;flex-wrap:wrap}
+.pv .it{position:relative;width:76px;height:76px;border-radius:12px;overflow:hidden;background:var(--bg);display:grid;place-items:center}
+.pv img{width:100%;height:100%;object-fit:cover}
+.pv .rm{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:14px;line-height:1;display:grid;place-items:center}
+.play{position:absolute;inset:auto auto 5px 5px;background:rgba(0,0,0,.6);color:#fff;border-radius:6px;font-size:11px;font-weight:700;padding:1px 6px;display:flex;align-items:center;gap:3px}
+.media{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.media.n1{grid-template-columns:1fr}.media.n2{grid-template-columns:1fr 1fr}
+.th{position:relative;border:0;padding:0;border-radius:10px;overflow:hidden;background:var(--bg);aspect-ratio:1;max-width:100%}
+.media.n1 .th{aspect-ratio:4/3}
+.th img{width:100%;height:100%;object-fit:cover;display:block}
+.th .ph{position:absolute;inset:0;display:grid;place-items:center;color:var(--faint);font-size:12px}
+.place{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--muted);margin-top:6px}
+.place svg{width:14px;height:14px;flex:none}
+.lb{position:fixed;inset:0;z-index:50;background:rgba(5,8,12,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.lb .body{flex:1;min-height:0;width:100%;display:grid;place-items:center}
+.lb img,.lb video{max-width:100%;max-height:100%;border-radius:8px}
+.lb .bar{display:flex;gap:10px;justify-content:center;padding-top:12px;flex-wrap:wrap}
+.lb .bar a,.lb .bar button{border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;border-radius:999px;padding:8px 16px;font-size:15px;font-weight:600;text-decoration:none}
+.lb p{color:#cfd6dd;text-align:center;max-width:32ch}
+
 /* barra schede */
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--bar);-webkit-backdrop-filter:saturate(1.6) blur(18px);backdrop-filter:saturate(1.6) blur(18px);
   border-top:1px solid var(--line);display:flex;justify-content:center;
@@ -195,6 +222,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   <div class="setup" id="about">
     <div class="sec-h"><h2>Versione</h2><span class="n" id="ver2"></span></div>
     <ul class="log">
+      <li><b>2.0</b> · 3 nov 2026 — Foto e video brevi salvati su Google Drive; luogo della voce; richiede lo script 2.0.</li>
       <li><b>1.3</b> · 3 nov 2026 — Numero di versione e data visibili; elenco delle novità.</li>
       <li><b>1.2</b> · 3 nov 2026 — Nuova interfaccia con le schede Scrivi, Leggi e Mese; contatori; tema scuro.</li>
       <li><b>1.1</b> · 3 nov 2026 — Corretto l'invio del testo al foglio Google.</li>
@@ -230,6 +258,12 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     </div>
     <label for="text" class="eyebrow" id="prompt" style="text-transform:none;letter-spacing:0;font-size:14px;font-weight:500">Cosa ti passa per la testa?</label>
     <textarea id="text" rows="5" placeholder="Inizia a scrivere…"></textarea>
+    <div class="pv" id="pv" hidden></div>
+    <div class="tools">
+      <label class="tool" for="fileIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="15" rx="2"/><circle cx="12" cy="12.5" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg>Foto o video
+        <input id="fileIn" type="file" accept="image/*,video/*" multiple></label>
+      <button type="button" class="tool" id="placeBtn" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span id="placeTxt">Aggiungi luogo</span></button>
+    </div>
     <div class="compose-foot">
       <span class="mic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><span>Per dettare tocca il microfono della tastiera</span></span>
       <button class="save" id="save" type="submit" disabled>Salva</button>
@@ -296,10 +330,11 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   </div>
 </nav>
 <div class="toast" id="toast" role="status"></div>
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Allegato"><div class="body" id="lbBody"></div><div class="bar" id="lbBar"></div></div>
 
 <script>
 (function(){
-  const VERSIONE_APP="1.3", DATA_APP="3 novembre 2026";
+  const VERSIONE_APP="2.0", DATA_APP="3 novembre 2026";
   const $=id=>document.getElementById(id);
   const pad=n=>String(n).padStart(2,"0");
   const keyOf=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
@@ -323,6 +358,29 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   let view=load("diario-vista","scrivi"), filt="tutti", dayFilter=null, openId=null, confirmId=null, newId=null;
   let daysShown=30, month=todayKey().slice(0,7), syncing=false, lastErr="";
 
+  /* ---------- archivio locale dei file (IndexedDB) ---------- */
+  let dbp=null;
+  function idb(){ if(dbp) return dbp; dbp=new Promise((res,rej)=>{ try{const r=indexedDB.open("diario-file",1);
+      r.onupgradeneeded=()=>{r.result.createObjectStore("file");r.result.createObjectStore("anteprime")};
+      r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);}catch(e){rej(e)} }); return dbp }
+  async function iget(st,k){try{const d=await idb();return await new Promise(r=>{const q=d.transaction(st).objectStore(st).get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>r(undefined)})}catch(e){return undefined}}
+  async function iput(st,k,v){try{const d=await idb();await new Promise(r=>{const t=d.transaction(st,"readwrite");t.objectStore(st).put(v,k);t.oncomplete=r;t.onerror=r})}catch(e){}}
+  async function idel(st,k){try{const d=await idb();await new Promise(r=>{const t=d.transaction(st,"readwrite");t.objectStore(st).delete(k);t.oncomplete=r;t.onerror=r})}catch(e){}}
+  const toB64=b=>new Promise((res,rej)=>{const f=new FileReader();f.onload=()=>res(String(f.result).split(",")[1]);f.onerror=rej;f.readAsDataURL(b)});
+  const b64ToBlob=(d,m)=>{const s=atob(d),a=new Uint8Array(s.length);for(let i=0;i<s.length;i++)a[i]=s.charCodeAt(i);return new Blob([a],{type:m})};
+  const MAX_VIDEO=25*1024*1024, MAX_ALLEGATI=4;
+
+  function loadImg(file){return new Promise((res,rej)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{res(im);setTimeout(()=>URL.revokeObjectURL(u),1000)};im.onerror=()=>{URL.revokeObjectURL(u);rej(new Error("img"))};im.src=u})}
+  function scale(src,w,h,max,q){const r=Math.min(1,max/Math.max(w,h)),c=document.createElement("canvas");c.width=Math.round(w*r);c.height=Math.round(h*r);
+    c.getContext("2d").drawImage(src,0,0,c.width,c.height);return new Promise(res=>c.toBlob(b=>res(b),"image/jpeg",q))}
+  async function blobToDataURL(b){return "data:"+b.type+";base64,"+await toB64(b)}
+  function videoThumb(file){return new Promise(res=>{const v=document.createElement("video"),u=URL.createObjectURL(file);let done=false;
+    const end=x=>{if(done)return;done=true;URL.revokeObjectURL(u);res(x)};
+    v.muted=true;v.playsInline=true;v.preload="auto";v.src=u;
+    v.onloadeddata=()=>{try{v.currentTime=Math.min(.5,(v.duration||1)/2)}catch(e){end(null)}};
+    v.onseeked=async()=>{try{const b=await scale(v,v.videoWidth,v.videoHeight,360,.7);end(b?await blobToDataURL(b):null)}catch(e){end(null)}};
+    v.onerror=()=>end(null); setTimeout(()=>end(null),5000)})}
+
   /* ---------- rete ---------- */
   function normUrl(s){s=s.trim(); return /^[\w-]{30,}$/.test(s)?"https://script.google.com/macros/s/"+s+"/exec":s}
   async function api(body,c){
@@ -336,9 +394,22 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   async function sync(){
     if(syncing||!cfg) return; syncing=true; paintSync();
     try{
-      while(coda.length){ const op=coda[0]; await api(op.action==="add"?Object.assign({action:"add"},op.voce):op); coda.shift(); store("diario-coda",coda); }
+      while(coda.length){
+        const op=coda[0];
+        if(op.action==="upload"){
+          const blob=await iget("file",op.aid);
+          if(blob){
+            const j=await api({action:"upload",aid:op.aid,nome:op.nome,mime:blob.type,dati:await toB64(blob)});
+            coda.forEach(o=>{if(o.action==="add") (o.voce.allegati||[]).forEach(a=>{if(a.aid===op.aid) a.id=j.id})});
+            voci.forEach(v=>(v.allegati||[]).forEach(a=>{if(a.aid===op.aid) a.id=j.id}));
+            const th=await iget("anteprime",op.aid); if(th) await iput("anteprime",j.id,th);
+            if(op.tipo==="video") await idel("file",op.aid); else await iput("file",j.id,blob);
+          }
+        } else await api(op.action==="add"?Object.assign({action:"add"},op.voce):op);
+        coda.shift(); store("diario-coda",coda);
+      }
       const j=await api({action:"list"});
-      voci=j.voci.filter(v=>v.testo&&isFinite(v.ts)).concat(coda.filter(o=>o.action==="add").map(o=>o.voce));
+      voci=j.voci.filter(v=>(v.testo||(v.allegati&&v.allegati.length))&&isFinite(v.ts)).concat(coda.filter(o=>o.action==="add").map(o=>o.voce));
       store("diario-voci",voci); lastErr="";
     }catch(e){ lastErr=navigator.onLine?e.message:"offline"; }
     syncing=false; render();
@@ -388,13 +459,47 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     $("save").classList.toggle("a",k==="azione");}
   $("kP").onclick=()=>{setKind("pensiero");ta.focus()}; $("kA").onclick=()=>{setKind("azione");ta.focus()};
   setKind(kind);
+  let pending=[], luogoOn=load("diario-luogo",false);
+  function paintPlace(){$("placeBtn").setAttribute("aria-pressed",luogoOn);$("placeTxt").textContent=luogoOn?"Luogo attivo":"Aggiungi luogo"}
+  paintPlace();
+  $("placeBtn").onclick=()=>{luogoOn=!luogoOn;store("diario-luogo",luogoOn);paintPlace();
+    if(luogoOn&&navigator.geolocation) navigator.geolocation.getCurrentPosition(()=>{},()=>{toast("Posizione non disponibile: controlla i permessi");luogoOn=false;store("diario-luogo",false);paintPlace()},{timeout:10000,maximumAge:600000})};
+  function getPos(){return new Promise(res=>{if(!luogoOn||!navigator.geolocation) return res(null);
+    navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lng:p.coords.longitude}),()=>res(null),{timeout:8000,maximumAge:300000,enableHighAccuracy:false})})}
+  function paintPv(){const el=$("pv");el.hidden=!pending.length;
+    el.innerHTML=pending.map((p,i)=>'<div class="it">'+(p.thumb?'<img src="'+p.thumb+'" alt="">':'')+(p.tipo==="video"?'<span class="play">▶ video</span>':'')+'<button type="button" class="rm" data-i="'+i+'" aria-label="Rimuovi">✕</button></div>').join("");
+    updSave()}
+  $("pv").onclick=e=>{const b=e.target.closest(".rm");if(!b)return;pending.splice(+b.dataset.i,1);paintPv()};
+  $("fileIn").addEventListener("change",async e=>{
+    const files=[...e.target.files]; e.target.value="";
+    for(const f of files){
+      if(pending.length>=MAX_ALLEGATI){toast("Massimo "+MAX_ALLEGATI+" allegati per voce");break}
+      const aid=uid();
+      try{
+        if(f.type.startsWith("video/")){
+          if(f.size>MAX_VIDEO){toast("Video troppo lungo: massimo circa 25 MB");continue}
+          pending.push({aid,tipo:"video",nome:f.name||"video.mov",blob:f,thumb:await videoThumb(f)});
+        } else {
+          const im=await loadImg(f), big=await scale(im,im.naturalWidth,im.naturalHeight,1600,.82), sm=await scale(im,im.naturalWidth,im.naturalHeight,360,.7);
+          pending.push({aid,tipo:"foto",nome:(f.name||"foto").replace(/\.\w+$/,"")+".jpg",blob:big,thumb:await blobToDataURL(sm)});
+        }
+      }catch(err){toast("Non riesco a leggere questo file")}
+      paintPv();
+    }
+  });
+
   function grow(){ta.style.height="auto";ta.style.height=Math.max(150,ta.scrollHeight)+"px"}
-  function updSave(){$("save").disabled=!ta.value.trim()}
+  function updSave(){$("save").disabled=!ta.value.trim()&&!(typeof pending!=="undefined"&&pending.length)}
   ta.addEventListener("input",()=>{try{localStorage.setItem("diario-bozza",ta.value)}catch(e){} updSave(); grow()});
-  $("composer").addEventListener("submit",e=>{
-    e.preventDefault(); const testo=ta.value.trim(); if(!testo) return;
-    const voce={id:uid(),tipo:kind,testo,ts:Date.now()};
-    voci.push(voce); coda.push({action:"add",voce}); store("diario-voci",voci); store("diario-coda",coda);
+  let saving=false;
+  $("composer").addEventListener("submit",async e=>{
+    e.preventDefault(); const testo=ta.value.trim(); if((!testo&&!pending.length)||saving) return;
+    saving=true; $("save").disabled=true;
+    const ts=Date.now(), pos=await getPos(), att=pending.slice(); pending=[]; paintPv();
+    const voce={id:uid(),tipo:kind,testo,ts,allegati:att.map(a=>({aid:a.aid,tipo:a.tipo,nome:a.nome}))};
+    if(pos){voce.lat=pos.lat;voce.lng=pos.lng}
+    for(const a of att){ await iput("file",a.aid,a.blob); if(a.thumb) await iput("anteprime",a.aid,a.thumb); coda.push({action:"upload",aid:a.aid,nome:a.nome,tipo:a.tipo}) }
+    voci.push(voce); coda.push({action:"add",voce}); store("diario-voci",voci); store("diario-coda",coda); saving=false;
     ta.value=""; try{localStorage.removeItem("diario-bozza")}catch(e){} grow(); updSave(); ta.blur();
     newId=voce.id; toast(kind==="azione"?"Azione salvata":"Pensiero salvato");
     render(); sync();
@@ -415,10 +520,45 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     }
     return '<li class="ent '+p+(newId===v.id?" new":"")+'" data-id="'+v.id+'"><span class="t">'+hhmm(v.ts)+'</span><span class="rail"><i></i></span>'+
       '<div class="card" role="button" tabindex="0"><span class="k">'+(p==="a"?"Azione":"Pensiero")+(pend?'<span class="pend">in attesa di invio</span>':'')+'</span>'+
-      '<div class="x">'+x+'</div>'+acts+'</div></li>';
+      (v.testo?'<div class="x">'+x+'</div>':'')+mediaHTML(v)+placeHTML(v)+acts+'</div></li>';
   }
+  function mediaHTML(v){const al=v.allegati||[]; if(!al.length) return "";
+    return '<div class="media n'+Math.min(al.length,3)+'">'+al.map(a=>'<button class="th" data-aid="'+esc(a.aid||"")+'" data-fid="'+esc(a.id||"")+'" data-t="'+a.tipo+'" aria-label="Apri '+(a.tipo==="video"?"video":"foto")+'"><img alt=""><span class="ph">'+(a.tipo==="video"?"video":"foto")+'</span>'+(a.tipo==="video"?'<span class="play">▶</span>':'')+'</button>').join("")+'</div>'}
+  function placeHTML(v){ if(!v.luogo&&!isFinite(v.lat)) return "";
+    return '<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>'+esc(v.luogo||"Posizione salvata")+'</div>'}
+  const thumbBusy=new Set(); let thumbQ=Promise.resolve();
+  function fillThumbs(){
+    document.querySelectorAll(".th").forEach(async b=>{
+      const img=b.querySelector("img"); if(img.getAttribute("src")) return;
+      const aid=b.dataset.aid, fid=b.dataset.fid;
+      let d=(fid&&await iget("anteprime",fid))||(aid&&await iget("anteprime",aid));
+      if(d){img.src=d;b.querySelector(".ph").hidden=true;return}
+      if(!fid||thumbBusy.has(fid)||!cfg) return; thumbBusy.add(fid);
+      thumbQ=thumbQ.then(async()=>{try{const j=await api({action:"media",id:fid,anteprima:true});
+        if(j.dati){const u="data:"+(j.mime||"image/png")+";base64,"+j.dati;await iput("anteprime",fid,u);
+          document.querySelectorAll('.th[data-fid="'+fid+'"] img').forEach(i=>{i.src=u;i.nextElementSibling.hidden=true})}}catch(e){} });
+    });
+  }
+  const lb=$("lb"); let lbUrl=null;
+  function closeLb(){lb.hidden=true;$("lbBody").innerHTML="";if(lbUrl){URL.revokeObjectURL(lbUrl);lbUrl=null}}
+  lb.onclick=e=>{if(e.target===lb||e.target.id==="lbBody"||e.target.dataset.close!==undefined) closeLb()};
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!lb.hidden) closeLb()});
+  async function openMedia(b){
+    const aid=b.dataset.aid, fid=b.dataset.fid, video=b.dataset.t==="video";
+    lb.hidden=false; $("lbBody").innerHTML='<p>Carico…</p>';
+    const drive=fid?'<a href="https://drive.google.com/file/d/'+fid+'/view" target="_blank" rel="noopener">Apri in Drive</a>':'';
+    $("lbBar").innerHTML=drive+'<button data-close>Chiudi</button>';
+    let blob=(fid&&await iget("file",fid))||(aid&&await iget("file",aid));
+    if(!blob&&fid&&!video){try{const j=await api({action:"media",id:fid});if(j.dati){blob=b64ToBlob(j.dati,j.mime||"image/jpeg");await iput("file",fid,blob)}}catch(e){}}
+    if(lb.hidden) return;
+    if(!blob){$("lbBody").innerHTML=video?'<p>Il video è su Google Drive. Toccando "Apri in Drive" lo guardi nell\'app Drive.</p>':'<p>Foto non disponibile offline. Riprova con la connessione attiva.</p>';return}
+    lbUrl=URL.createObjectURL(blob);
+    $("lbBody").innerHTML=video?'<video src="'+lbUrl+'" controls playsinline autoplay></video>':'<img src="'+lbUrl+'" alt="">';
+  }
+
   function bindList(ul){
     ul.onclick=async e=>{
+      const th=e.target.closest(".th"); if(th){openMedia(th);return}
       const li=e.target.closest(".ent"); if(!li) return; const id=li.dataset.id, a=e.target.closest("[data-a]")?.dataset.a;
       if(a==="copy"){const v=voci.find(x=>x.id===id); try{await navigator.clipboard.writeText(v.testo);toast("Copiato")}catch(err){toast("Copia non riuscita")} return}
       if(a==="del"){confirmId=id;render();return}
@@ -433,7 +573,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   function removeVoce(id){
     voci=voci.filter(v=>v.id!==id);
     const i=coda.findIndex(o=>o.action==="add"&&o.voce.id===id);
-    if(i>=0) coda.splice(i,1); else coda.push({action:"delete",id});
+    if(i>=0){ const aids=(coda[i].voce.allegati||[]).map(a=>a.aid); coda.splice(i,1); coda=coda.filter(o=>!(o.action==="upload"&&aids.includes(o.aid))); }
+    else coda.push({action:"delete",id});
     store("diario-voci",voci); store("diario-coda",coda); toast("Voce eliminata"); render(); sync();
   }
 
@@ -505,7 +646,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
       $("grid").innerHTML=h;
       $("msum").innerHTML='<div><b>'+wd+'</b><span>giorni scritti</span></div><div><b>'+wp+'</b><span>pensieri</span></div><div><b>'+wa+'</b><span>azioni</span></div>';
     }
-    newId=null;
+    newId=null; fillThumbs();
   }
 
   let tt; function toast(m){const el=$("toast");el.textContent=m;el.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("on"),1800)}

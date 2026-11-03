@@ -1,5 +1,11 @@
 # Diario — novità
 
+## 2.0 · 3 novembre 2026
+- Foto (ridotte in automatico) e video brevi fino a circa 25 MB, salvati nella cartella Drive "Diario – Allegati".
+- Luogo della voce (via e città), facoltativo.
+- Anteprime nella timeline; tocca per vedere la foto o aprire il video in Drive.
+- Richiede lo script Google 2.0.
+
 ## 1.3 · 3 novembre 2026
 - Numero di versione e data visibili in fondo alla scheda Scrivi e nelle Impostazioni.
 - Elenco delle novità nelle Impostazioni.
