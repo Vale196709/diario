@@ -1,5 +1,12 @@
 # Diario — novità
 
+## 2.1 · 3 novembre 2026
+- Umore della voce (5 livelli), con il colore del giorno nel calendario e l'umore medio del mese.
+- Modifica di testo, tipo e umore delle voci già salvate.
+- Esportazione del mese in PDF, con foto e link ai video.
+- Blocco con PIN di 4 cifre, per dispositivo.
+- Richiede lo script Google 2.1.
+
 ## 2.0 · 3 novembre 2026
 - Foto (ridotte in automatico) e video brevi fino a circa 25 MB, salvati nella cartella Drive "Diario – Allegati".
 - Luogo della voce (via e città), facoltativo.

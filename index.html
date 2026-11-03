@@ -18,6 +18,7 @@
   --bg:#F1F3F6; --paper:#FFFFFF; --ink:#18222D; --muted:#66727F; --faint:#98A3AE; --line:#E1E5EA;
   --think:#3D4FD6; --think-soft:#E7EAFC; --act:#178A63; --act-soft:#DCF2E8;
   --danger:#C0352B; --warn:#A86A00; --bar:rgba(255,255,255,.86);
+  --m1:#D2554A; --m2:#E0913F; --m3:#C8AE3A; --m4:#6FB45E; --m5:#249B6A;
   --shadow:0 1px 2px rgba(24,34,45,.06),0 8px 24px rgba(24,34,45,.06);
   --serif:ui-serif,"New York","Iowan Old Style",Georgia,serif;
   --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif;
@@ -27,6 +28,7 @@
   --bg:#0E1319; --paper:#18202A; --ink:#E8EDF2; --muted:#9AA6B2; --faint:#6B7784; --line:#26303B;
   --think:#97A4FF; --think-soft:#232C5A; --act:#5BD3A6; --act-soft:#143A2E;
   --danger:#FF8A80; --warn:#F2BC57; --bar:rgba(20,27,35,.86);
+  --m1:#F07A6F; --m2:#F2A65C; --m3:#E3CB5B; --m4:#8FD07E; --m5:#4CC892;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;background:var(--bg)}
@@ -186,6 +188,44 @@ mark{background:color-mix(in srgb,var(--think) 22%,transparent);color:inherit;bo
 .lb .bar a,.lb .bar button{border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;border-radius:999px;padding:8px 16px;font-size:15px;font-weight:600;text-decoration:none}
 .lb p{color:#cfd6dd;text-align:center;max-width:32ch}
 
+/* umore */
+.moods{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.moods .lbl{font-size:14px;color:var(--muted);margin-right:4px}
+.mood{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line);background:transparent;font-size:22px;line-height:1;display:grid;place-items:center;transition:transform .12s,border-color .12s;filter:grayscale(.6);opacity:.75}
+.mood[aria-pressed="true"]{border-color:var(--mc);background:color-mix(in srgb,var(--mc) 18%,transparent);filter:none;opacity:1;transform:scale(1.08)}
+.mface{font-size:15px;margin-left:6px;vertical-align:-1px}
+.cell.has.mo{background:color-mix(in srgb,var(--mc) 26%,var(--bg))}
+.msum{grid-template-columns:repeat(4,1fr)!important}
+@media (max-width:420px){.msum{grid-template-columns:repeat(2,1fr)!important}}
+.export{display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:13px;font-weight:700;font-size:16px}
+.export svg{width:18px;height:18px}
+.export:disabled{opacity:.5}
+
+/* foglio di modifica */
+.sheet{position:fixed;inset:0;z-index:45;background:rgba(5,8,12,.45);display:flex;align-items:flex-end;justify-content:center}
+.sheet .in{background:var(--paper);width:100%;max-width:600px;border-radius:22px 22px 0 0;display:flex;flex-direction:column;gap:14px;max-height:92%;overflow:auto;
+  padding:18px max(18px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px))}
+.sheet textarea{border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-height:140px}
+.sheet .row{display:flex;gap:10px}
+.sheet .row button{flex:1}
+.ghost{border:1px solid var(--line);background:transparent;border-radius:14px;padding:14px;font-weight:700;font-size:17px}
+
+/* blocco PIN */
+.lock{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;
+  padding:max(24px,env(safe-area-inset-top,0px)) 24px max(24px,env(safe-area-inset-bottom,0px))}
+.lock h2{font-size:26px;text-align:center}
+.lock p{margin:0;color:var(--muted);font-size:15px;text-align:center;min-height:1.5em;max-width:30ch}
+.lock p.err{color:var(--danger)}
+.pdots{display:flex;gap:16px}
+.pdots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--ink)}
+.pdots i.on{background:var(--ink)}
+.pdots.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-4px)}}
+.pad{display:grid;grid-template-columns:repeat(3,72px);gap:14px}
+.pad button{width:72px;height:72px;border-radius:50%;border:0;background:var(--paper);box-shadow:var(--shadow);font-size:28px;font-family:var(--sans);font-variant-numeric:tabular-nums}
+.pad button.no{background:transparent;box-shadow:none;font-size:13px;line-height:1.15;font-weight:600;color:var(--muted);padding:0 2px}
+.pad button:active{background:var(--line)}
+
 /* barra schede */
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--bar);-webkit-backdrop-filter:saturate(1.6) blur(18px);backdrop-filter:saturate(1.6) blur(18px);
   border-top:1px solid var(--line);display:flex;justify-content:center;
@@ -219,9 +259,15 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     <p class="status" id="cfgStatus" role="status"></p>
     <button class="link" id="cfgCancel" hidden>Annulla</button>
   </div>
+  <div class="setup" id="pinBox">
+    <div class="sec-h"><h2>Blocco con PIN</h2><span class="n" id="pinState"></span></div>
+    <p class="status" style="margin:0">Chiede un PIN di 4 cifre quando apri il Diario o ci torni dopo un minuto. Vale solo su questo dispositivo.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="ghost" id="pinSet" style="flex:1">Imposta PIN</button><button class="ghost" id="pinOff" style="flex:1;color:var(--danger)" hidden>Rimuovi PIN</button></div>
+  </div>
   <div class="setup" id="about">
     <div class="sec-h"><h2>Versione</h2><span class="n" id="ver2"></span></div>
     <ul class="log">
+      <li><b>2.1</b> · 3 nov 2026 — Umore, modifica delle voci, PDF del mese, blocco con PIN; richiede lo script 2.1.</li>
       <li><b>2.0</b> · 3 nov 2026 — Foto e video brevi salvati su Google Drive; luogo della voce; richiede lo script 2.0.</li>
       <li><b>1.3</b> · 3 nov 2026 — Numero di versione e data visibili; elenco delle novità.</li>
       <li><b>1.2</b> · 3 nov 2026 — Nuova interfaccia con le schede Scrivi, Leggi e Mese; contatori; tema scuro.</li>
@@ -256,6 +302,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
         <span><strong>Azione</strong><small>Cosa hai fatto o farai</small></span>
       </button>
     </div>
+    <div class="moods" id="moodRow" role="group" aria-label="Umore"></div>
     <label for="text" class="eyebrow" id="prompt" style="text-transform:none;letter-spacing:0;font-size:14px;font-weight:500">Cosa ti passa per la testa?</label>
     <textarea id="text" rows="5" placeholder="Inizia a scrivere…"></textarea>
     <div class="pv" id="pv" hidden></div>
@@ -316,6 +363,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     <div class="legend"><span><i style="background:var(--think)"></i>Pensieri</span><span><i style="background:var(--act)"></i>Azioni</span></div>
   </div>
   <div class="msum" id="msum"></div>
+  <button class="export" id="exportBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M12 12v6M9 15l3 3 3-3"/></svg><span id="exportTxt">Esporta il mese in PDF</span></button>
   <p class="empty">Tocca un giorno per rileggerlo.</p>
 </section>
 
@@ -330,11 +378,33 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   </div>
 </nav>
 <div class="toast" id="toast" role="status"></div>
+<div class="sheet" id="ed" hidden role="dialog" aria-modal="true" aria-labelledby="edT"><div class="in">
+  <div class="sec-h"><h2 id="edT">Modifica voce</h2><span class="n" id="edWhen"></span></div>
+  <div class="kinds" role="group" aria-label="Tipo di voce">
+    <button type="button" class="kind k-p" id="edP" aria-pressed="true"><span><strong>Pensiero</strong></span></button>
+    <button type="button" class="kind k-a" id="edA" aria-pressed="false"><span><strong>Azione</strong></span></button>
+  </div>
+  <div class="moods" id="edMood" role="group" aria-label="Umore"></div>
+  <label for="edText" class="eyebrow" style="text-transform:none;letter-spacing:0;font-size:14px;font-weight:500">Testo</label>
+  <textarea id="edText"></textarea>
+  <div class="row"><button class="ghost" id="edCancel">Annulla</button><button class="primary" id="edSave">Salva modifiche</button></div>
+</div></div>
+<div class="lock" id="lock" hidden role="dialog" aria-modal="true" aria-labelledby="lockT">
+  <h2 id="lockT">Diario</h2>
+  <div class="pdots" id="pdots"><i></i><i></i><i></i><i></i></div>
+  <p id="lockMsg" role="status"></p>
+  <div class="pad" id="pad">
+    <button data-n="1">1</button><button data-n="2">2</button><button data-n="3">3</button>
+    <button data-n="4">4</button><button data-n="5">5</button><button data-n="6">6</button>
+    <button data-n="7">7</button><button data-n="8">8</button><button data-n="9">9</button>
+    <button class="no" id="padAlt">Annulla</button><button data-n="0">0</button><button class="no" data-n="back" aria-label="Cancella">&#9003;</button>
+  </div>
+</div>
 <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Allegato"><div class="body" id="lbBody"></div><div class="bar" id="lbBar"></div></div>
 
 <script>
 (function(){
-  const VERSIONE_APP="2.0", DATA_APP="3 novembre 2026";
+  const VERSIONE_APP="2.1", DATA_APP="3 novembre 2026";
   const $=id=>document.getElementById(id);
   const pad=n=>String(n).padStart(2,"0");
   const keyOf=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
@@ -459,6 +529,13 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     $("save").classList.toggle("a",k==="azione");}
   $("kP").onclick=()=>{setKind("pensiero");ta.focus()}; $("kA").onclick=()=>{setKind("azione");ta.focus()};
   setKind(kind);
+  const MOODS=[["😞","Pessimo"],["😕","Giù"],["😐","Così così"],["🙂","Bene"],["😄","Ottimo"]];
+  const moodFace=u=>u>=1&&u<=5?MOODS[u-1][0]:"";
+  function moodButtons(el,cur){el.innerHTML=(el.id==="moodRow"?'<span class="lbl">Umore</span>':'')+MOODS.map((m,i)=>'<button type="button" class="mood" data-u="'+(i+1)+'" style="--mc:var(--m'+(i+1)+')" aria-pressed="'+(cur===i+1)+'" aria-label="'+m[1]+'" title="'+m[1]+'">'+m[0]+'</button>').join("")}
+  let umore=null;
+  moodButtons($("moodRow"),umore);
+  $("moodRow").onclick=e=>{const b=e.target.closest(".mood");if(!b)return;const u=+b.dataset.u;umore=umore===u?null:u;moodButtons($("moodRow"),umore)};
+
   let pending=[], luogoOn=load("diario-luogo",false);
   function paintPlace(){$("placeBtn").setAttribute("aria-pressed",luogoOn);$("placeTxt").textContent=luogoOn?"Luogo attivo":"Aggiungi luogo"}
   paintPlace();
@@ -498,6 +575,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     const ts=Date.now(), pos=await getPos(), att=pending.slice(); pending=[]; paintPv();
     const voce={id:uid(),tipo:kind,testo,ts,allegati:att.map(a=>({aid:a.aid,tipo:a.tipo,nome:a.nome}))};
     if(pos){voce.lat=pos.lat;voce.lng=pos.lng}
+    if(umore){voce.umore=umore; umore=null; moodButtons($("moodRow"),null)}
     for(const a of att){ await iput("file",a.aid,a.blob); if(a.thumb) await iput("anteprime",a.aid,a.thumb); coda.push({action:"upload",aid:a.aid,nome:a.nome,tipo:a.tipo}) }
     voci.push(voce); coda.push({action:"add",voce}); store("diario-voci",voci); store("diario-coda",coda); saving=false;
     ta.value=""; try{localStorage.removeItem("diario-bozza")}catch(e){} grow(); updSave(); ta.blur();
@@ -516,10 +594,10 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     if(openId===v.id){
       acts=confirmId===v.id
         ?'<div class="acts"><span class="q">Eliminare anche dal foglio?</span><button data-a="yes" class="yes">Elimina</button><button data-a="no">Annulla</button></div>'
-        :'<div class="acts"><button data-a="copy">Copia</button><button data-a="del" class="del">Elimina</button></div>';
+        :'<div class="acts"><button data-a="edit">Modifica</button><button data-a="copy">Copia</button><button data-a="del" class="del">Elimina</button></div>';
     }
     return '<li class="ent '+p+(newId===v.id?" new":"")+'" data-id="'+v.id+'"><span class="t">'+hhmm(v.ts)+'</span><span class="rail"><i></i></span>'+
-      '<div class="card" role="button" tabindex="0"><span class="k">'+(p==="a"?"Azione":"Pensiero")+(pend?'<span class="pend">in attesa di invio</span>':'')+'</span>'+
+      '<div class="card" role="button" tabindex="0"><span class="k">'+(p==="a"?"Azione":"Pensiero")+(v.umore?'<span class="mface" title="'+MOODS[v.umore-1][1]+'">'+moodFace(v.umore)+'</span>':'')+(pend?'<span class="pend">in attesa di invio</span>':'')+'</span>'+
       (v.testo?'<div class="x">'+x+'</div>':'')+mediaHTML(v)+placeHTML(v)+acts+'</div></li>';
   }
   function mediaHTML(v){const al=v.allegati||[]; if(!al.length) return "";
@@ -560,6 +638,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     ul.onclick=async e=>{
       const th=e.target.closest(".th"); if(th){openMedia(th);return}
       const li=e.target.closest(".ent"); if(!li) return; const id=li.dataset.id, a=e.target.closest("[data-a]")?.dataset.a;
+      if(a==="edit"){openEdit(id);return}
       if(a==="copy"){const v=voci.find(x=>x.id===id); try{await navigator.clipboard.writeText(v.testo);toast("Copiato")}catch(err){toast("Copia non riuscita")} return}
       if(a==="del"){confirmId=id;render();return}
       if(a==="no"){confirmId=null;render();return}
@@ -570,6 +649,24 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     ul.onkeydown=e=>{if((e.key==="Enter"||e.key===" ")&&e.target.classList.contains("card")){e.preventDefault();e.target.click()}};
   }
   bindList($("todayList")); bindList($("readList"));
+  let edId=null, edKind="pensiero", edUm=null;
+  function edPaint(){$("edP").setAttribute("aria-pressed",edKind==="pensiero");$("edA").setAttribute("aria-pressed",edKind==="azione");moodButtons($("edMood"),edUm)}
+  function openEdit(id){const v=voci.find(x=>x.id===id);if(!v)return;edId=id;edKind=v.tipo==="azione"?"azione":"pensiero";edUm=v.umore||null;
+    $("edText").value=v.testo||"";$("edWhen").textContent=dayName(keyOf(new Date(v.ts)))+" · "+hhmm(v.ts);edPaint();$("ed").hidden=false;setTimeout(()=>$("edText").focus(),50)}
+  $("edP").onclick=()=>{edKind="pensiero";edPaint()}; $("edA").onclick=()=>{edKind="azione";edPaint()};
+  $("edMood").onclick=e=>{const b=e.target.closest(".mood");if(!b)return;const u=+b.dataset.u;edUm=edUm===u?null:u;edPaint()};
+  $("edCancel").onclick=()=>{$("ed").hidden=true};
+  $("ed").onclick=e=>{if(e.target.id==="ed")$("ed").hidden=true};
+  $("edSave").onclick=()=>{
+    const v=voci.find(x=>x.id===edId); if(!v) return; const testo=$("edText").value.trim();
+    if(!testo&&!(v.allegati||[]).length){toast("Scrivi qualcosa o elimina la voce");return}
+    v.testo=testo; v.tipo=edKind; v.umore=edUm||null;
+    const q=coda.find(o=>o.action==="add"&&o.voce.id===edId);
+    if(q){q.voce.testo=testo;q.voce.tipo=edKind;q.voce.umore=edUm||null}
+    else{coda=coda.filter(o=>!(o.action==="update"&&o.id===edId));coda.push({action:"update",id:edId,testo,tipo:edKind,umore:edUm||""})}
+    store("diario-voci",voci);store("diario-coda",coda);$("ed").hidden=true;openId=null;toast("Modifiche salvate");render();sync();
+  };
+
   function removeVoce(id){
     voci=voci.filter(v=>v.id!==id);
     const i=coda.findIndex(o=>o.action==="add"&&o.voce.id===id);
@@ -634,20 +731,117 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
       $("mNext").disabled=month>=t.slice(0,7); $("mNext").style.opacity=month>=t.slice(0,7)?.3:1;
       const lead=(first.getDay()+6)%7; let h="";
       for(let i=0;i<lead;i++) h+='<span class="cell out"></span>';
-      let wp=0,wa=0,wd=0;
+      let wp=0,wa=0,wd=0,ms=0,mn=0;
       for(let dd=1;dd<=nd;dd++){
         const k=month+"-"+pad(dd), it=days[k]||[], p=it.filter(v=>v.tipo!=="azione").length, a=it.length-p;
         wp+=p; wa+=a; if(it.length) wd++;
         let dots=""; for(let i=0;i<Math.min(p,3);i++) dots+='<i class="p"></i>'; for(let i=0;i<Math.min(a,3);i++) dots+='<i class="a"></i>';
-        const cls="cell"+(it.length?" has":"")+(k===t?" today":"")+(k>t?" fut":"");
-        h+=it.length?'<button class="'+cls+'" data-k="'+k+'" aria-label="'+esc(dayName(k))+', '+it.length+' voci">'+dd+'<span class="dots">'+dots+'</span></button>'
+        const um=it.filter(v=>v.umore).map(v=>v.umore), avg=um.length?Math.round(um.reduce((x,y)=>x+y,0)/um.length):0;
+        if(um.length){ms+=um.reduce((x,y)=>x+y,0);mn+=um.length}
+        const cls="cell"+(it.length?" has":"")+(avg?" mo":"")+(k===t?" today":"")+(k>t?" fut":"");
+        h+=it.length?'<button class="'+cls+'"'+(avg?' style="--mc:var(--m'+avg+')"':'')+' data-k="'+k+'" aria-label="'+esc(dayName(k))+', '+it.length+' voci">'+dd+'<span class="dots">'+dots+'</span></button>'
                     :'<span class="'+cls+'">'+dd+'<span class="dots"></span></span>';
       }
       $("grid").innerHTML=h;
-      $("msum").innerHTML='<div><b>'+wd+'</b><span>giorni scritti</span></div><div><b>'+wp+'</b><span>pensieri</span></div><div><b>'+wa+'</b><span>azioni</span></div>';
+      $("msum").innerHTML='<div><b>'+wd+'</b><span>giorni scritti</span></div><div><b>'+wp+'</b><span>pensieri</span></div><div><b>'+wa+'</b><span>azioni</span></div><div><b>'+(mn?moodFace(Math.round(ms/mn)):"–")+'</b><span>umore medio</span></div>';
     }
     newId=null; fillThumbs();
   }
+
+  /* ---------- esportazione PDF ---------- */
+  function loadScript(src){return new Promise((res,rej)=>{const sc=document.createElement("script");sc.src=src;sc.onload=res;sc.onerror=()=>rej(new Error("script"));document.head.appendChild(sc)})}
+  const clean=t=>String(t||"").replace(/[^\x09\x0A\x0D\x20-\x7E\xA0-\xFF‘’“”–—…€]/g,"");
+  async function imgForPdf(a){
+    let b=(a.id&&await iget("file",a.id))||(a.aid&&await iget("file",a.aid));
+    if(!b&&a.id){try{const j=await api({action:"media",id:a.id});if(j.dati){b=b64ToBlob(j.dati,j.mime||"image/jpeg");await iput("file",a.id,b)}}catch(e){}}
+    if(!b) return null;
+    const im=await loadImg(b), big=await scale(im,im.naturalWidth,im.naturalHeight,1200,.8);
+    return {url:await blobToDataURL(big),w:im.naturalWidth,h:im.naturalHeight};
+  }
+  $("exportBtn").onclick=async()=>{
+    const btn=$("exportBtn"),lbl=$("exportTxt"); btn.disabled=true; lbl.textContent="Preparo il PDF…";
+    try{
+      if(!window.jspdf) await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
+      const {jsPDF}=window.jspdf, doc=new jsPDF({unit:"mm",format:"a4"}), W=210,M=18,CW=W-2*M,B=297-M;
+      const [y0,m0]=month.split("-").map(Number), mname=new Date(y0,m0-1,1).toLocaleDateString("it-IT",{month:"long",year:"numeric"});
+      const list=voci.filter(v=>keyOf(new Date(v.ts)).slice(0,7)===month), days=byDay(list), keys=Object.keys(days).sort();
+      let y=M;
+      const need=h=>{if(y+h>B){doc.addPage();y=M}};
+      doc.setFont("times","bold");doc.setFontSize(26);doc.setTextColor(24,34,45);doc.text("Diario",M,y+8);
+      doc.setFont("helvetica","normal");doc.setFontSize(12);doc.setTextColor(100);doc.text(clean(mname[0].toUpperCase()+mname.slice(1)+" · "+list.length+" voci"),M,y+16);y+=28;
+      if(!keys.length){doc.text("Nessuna voce in questo mese.",M,y)}
+      let n=0;
+      for(const k of keys){
+        need(16); const dn=dateOf(k).toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"});
+        doc.setDrawColor(210);doc.line(M,y,W-M,y);y+=7;
+        doc.setFont("times","bold");doc.setFontSize(15);doc.setTextColor(24,34,45);doc.text(clean(dn[0].toUpperCase()+dn.slice(1)),M,y);y+=7;
+        for(const v of days[k]){
+          n++; lbl.textContent="Preparo il PDF… "+n+"/"+list.length;
+          need(14);
+          const az=v.tipo==="azione"; doc.setFont("helvetica","bold");doc.setFontSize(9);
+          if(az) doc.setTextColor(23,138,99); else doc.setTextColor(61,79,214);
+          let meta=hhmm(v.ts)+"  "+(az?"AZIONE":"PENSIERO"); if(v.umore) meta+="  ·  umore: "+MOODS[v.umore-1][1].toLowerCase();
+          doc.text(clean(meta),M,y);y+=5;
+          if(v.testo){doc.setFont("times","normal");doc.setFontSize(12);doc.setTextColor(30);
+            for(const ln of doc.splitTextToSize(clean(v.testo),CW)){need(6);doc.text(ln,M,y);y+=5.6}}
+          if(v.luogo){need(6);doc.setFont("helvetica","normal");doc.setFontSize(9);doc.setTextColor(110);doc.text(clean("Luogo: "+v.luogo),M,y);y+=5}
+          for(const a of (v.allegati||[])){
+            if(a.tipo==="video"){need(6);doc.setFont("helvetica","normal");doc.setFontSize(9);doc.setTextColor(61,79,214);
+              if(a.id) doc.textWithLink("Video: apri su Google Drive",M,y,{url:"https://drive.google.com/file/d/"+a.id+"/view"}); else doc.text("Video (in attesa di invio)",M,y); y+=5; continue}
+            const im=await imgForPdf(a); if(!im) continue;
+            let w=Math.min(CW*0.62,90),h=w*im.h/im.w; if(h>110){h=110;w=h*im.w/im.h}
+            need(h+3); doc.addImage(im.url,"JPEG",M,y+1,w,h); y+=h+4;
+          }
+          y+=4;
+        }
+      }
+      const pages=doc.getNumberOfPages();
+      for(let i=1;i<=pages;i++){doc.setPage(i);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(150);doc.text(clean("Diario · "+mname+" · pagina "+i+" di "+pages),M,297-8)}
+      const nome="Diario-"+month+".pdf", blob=doc.output("blob"), file=new File([blob],nome,{type:"application/pdf"});
+      window.__lastPdf=blob;
+      if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:nome})}catch(e){}}
+      else{const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=nome;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),30000)}
+    }catch(e){console.log("PDF",e&&e.message);toast(navigator.onLine?"PDF non riuscito, riprova":"Serve la connessione per creare il PDF")}
+    btn.disabled=false; lbl.textContent="Esporta il mese in PDF";
+  };
+
+  /* ---------- PIN ---------- */
+  let pinData=load("diario-pin",null), pinBuf="", pinMode="unlock", pinFirst="", fails=0, waitUntil=0, hiddenAt=0;
+  async function sha(t){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+  function paintPin(){document.querySelectorAll("#pdots i").forEach((d,i)=>d.classList.toggle("on",i<pinBuf.length))}
+  function lockMsg(m,err){const p=$("lockMsg");p.textContent=m||"";p.classList.toggle("err",!!err)}
+  function openLock(mode){pinMode=mode;pinBuf="";pinFirst="";paintPin();$("lock").hidden=false;
+    $("lockT").textContent=mode==="unlock"?"Diario":"Nuovo PIN";
+    lockMsg(mode==="unlock"?"Inserisci il PIN":"Scegli 4 cifre");
+    $("padAlt").textContent=mode==="unlock"?"Ho dimenticato":"Annulla"; $("padAlt").dataset.confirm="";}
+  function paintPinBox(){$("pinState").textContent=pinData?"Attivo":"Disattivo";$("pinSet").textContent=pinData?"Cambia PIN":"Imposta PIN";$("pinOff").hidden=!pinData}
+  paintPinBox();
+  $("pinSet").onclick=()=>openLock("set");
+  $("pinOff").onclick=()=>{pinData=null;try{localStorage.removeItem("diario-pin")}catch(e){} paintPinBox();toast("PIN rimosso")};
+  function shake(){const d=$("pdots");d.classList.remove("shake");void d.offsetWidth;d.classList.add("shake")}
+  async function pinDone(){
+    if(pinMode==="unlock"){
+      if(Date.now()<waitUntil){lockMsg("Troppi tentativi: attendi qualche secondo",true);pinBuf="";paintPin();return}
+      if(await sha(pinData.salt+pinBuf)===pinData.hash){$("lock").hidden=true;fails=0;pinBuf="";paintPin();render();return}
+      fails++; shake(); if(fails>=5){waitUntil=Date.now()+30000;fails=0;lockMsg("PIN errato. Riprova tra 30 secondi",true)} else lockMsg("PIN errato",true);
+      pinBuf=""; setTimeout(paintPin,250); return;
+    }
+    if(!pinFirst){pinFirst=pinBuf;pinBuf="";paintPin();lockMsg("Ripeti il PIN per conferma");return}
+    if(pinFirst!==pinBuf){shake();pinFirst="";pinBuf="";setTimeout(paintPin,250);lockMsg("I due PIN non coincidono. Ricomincia",true);return}
+    const salt=uid(); pinData={salt,hash:await sha(salt+pinBuf)}; store("diario-pin",pinData);
+    $("lock").hidden=true; paintPinBox(); toast("PIN attivato");
+  }
+  function pinKey(n){ if(n==="back"){pinBuf=pinBuf.slice(0,-1);paintPin();return}
+    if(pinBuf.length<4){pinBuf+=n;paintPin(); if(pinBuf.length===4) setTimeout(pinDone,120)} }
+  $("pad").onclick=e=>{const b=e.target.closest("button");if(!b)return;
+    if(b.id==="padAlt"){
+      if(pinMode!=="unlock"){$("lock").hidden=true;return}
+      if(!b.dataset.confirm){b.dataset.confirm="1";b.textContent="Conferma";lockMsg("Rimuovo PIN e collegamento da questo dispositivo. Le voci restano su Google: servirà di nuovo la frase segreta.",true);return}
+      pinData=null;cfg=null;voci=[];["diario-pin","diario-cfg","diario-voci"].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
+      $("lock").hidden=true;paintPinBox();showSetup();return}
+    if(b.dataset.n) pinKey(b.dataset.n);
+  };
+  document.addEventListener("keydown",e=>{if($("lock").hidden)return;if(/^\d$/.test(e.key))pinKey(e.key);else if(e.key==="Backspace")pinKey("back")});
 
   let tt; function toast(m){const el=$("toast");el.textContent=m;el.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("on"),1800)}
 
@@ -656,8 +850,12 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
   /* ---------- avvio ---------- */
   if(cfg){show(["scrivi","leggi","mese"].includes(view)?view:"scrivi"); sync()} else showSetup();
+  if(pinData&&cfg) openLock("unlock");
   window.addEventListener("online",sync);
-  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"){render();sync()}});
+  document.addEventListener("visibilitychange",()=>{
+    if(document.visibilityState==="hidden"){hiddenAt=Date.now();return}
+    if(pinData&&cfg&&$("lock").hidden&&Date.now()-hiddenAt>60000) openLock("unlock");
+    render();sync()});
   if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
 })();
 </script>
